@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"tools/push/client"
+	"github.com/itcuihao/gopush/client"
 )
 
 func (p *PushRecept) SetSearchMsgId(m string) *PushRecept {

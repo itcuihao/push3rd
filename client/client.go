@@ -15,6 +15,11 @@ type Client struct {
 	withoutTime time.Duration
 }
 
+const (
+	ContentTypeFORM = "application/x-www-form-urlencoded"
+	ContentTypeJSON = "application/json"
+)
+
 // NewClient new client
 func NewClient(httpClient *http.Client, withoutTime time.Duration) Client {
 	return Client{

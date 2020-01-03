@@ -28,7 +28,7 @@ func (p *PushRecept) SetOptionApns(o bool) *PushRecept {
 	if p.Options == nil {
 		p.Options = new(Options)
 	}
-	p.Options.ApnsProduction = o
+	p.Options.ApnsProduction = &o
 	return p
 }
 

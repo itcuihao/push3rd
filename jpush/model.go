@@ -39,7 +39,7 @@ type Options struct {
 	SendNo          int64  `json:"sendno,omitempty"`
 	TimeToLive      int64  `json:"time_to_live,omitempty"`
 	OverrideMsgId   int64  `json:"override_msg_id,omitempty"`
-	ApnsProduction  bool   `json:"apns_production,omitempty"`
+	ApnsProduction  *bool   `json:"apns_production,omitempty"`
 	ApnsCollapseId  string `json:"apns_collapse_id,omitempty"`
 	BigPushDuration int64  `json:"big_push_duration,omitempty"`
 }
