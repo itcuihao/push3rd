@@ -11,8 +11,8 @@ const (
 	// pass_through的值可以为：
 	// 0 表示通知栏消息
 	// 1 表示透传消息
-	PassThrough0 = int64(0)
-	PassThrough1 = int64(1)
+	PassThroughNotify = int64(0)
+	PassThroughCustom = int64(1)
 )
 const (
 	Version01 = "/v1"
