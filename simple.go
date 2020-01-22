@@ -99,3 +99,26 @@ func sendXiaoMi(wg *sync.WaitGroup, title, alert string, devices ...string) {
 		fmt.Println(result)
 	}
 }
+
+func SimpleSend(aDevices ,
+iDevices ,
+hDevices ,
+mDevices []string,title, alert string){
+		var (
+			// aDevices []string // 安卓
+			// iDevices []string // 苹果
+			// hDevices []string // 华为
+			// mDevices []string // 小米
+			wg       = &sync.WaitGroup{}
+
+
+		)
+
+		wg.Add(4)
+		go sendJAndroid(wg, title, alert, aDevices...)
+		go sendJIos(wg, title, alert, true, iDevices...)
+		go sendHuaWei(wg, title, alert, hDevices...)
+		go sendXiaoMi(wg, title, alert, mDevices...)
+		wg.Wait()
+
+}
