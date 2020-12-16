@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/itcuihao/gopush/apple"
 	"github.com/itcuihao/gopush/hwpush"
 	"github.com/itcuihao/gopush/jpush"
+	"github.com/itcuihao/gopush/wechat"
 	"github.com/itcuihao/gopush/xmpush"
 )
 
@@ -100,25 +102,61 @@ func sendXiaoMi(wg *sync.WaitGroup, title, alert string, devices ...string) {
 	}
 }
 
-func SimpleSend(aDevices ,
-iDevices ,
-hDevices ,
-mDevices []string,title, alert string){
-		var (
-			// aDevices []string // 安卓
-			// iDevices []string // 苹果
-			// hDevices []string // 华为
-			// mDevices []string // 小米
-			wg       = &sync.WaitGroup{}
+func SimpleSend(aDevices,
+	iDevices,
+	hDevices,
+	mDevices []string, title, alert string) {
+	var (
+		// aDevices []string // 安卓
+		// iDevices []string // 苹果
+		// hDevices []string // 华为
+		// mDevices []string // 小米
+		wg = &sync.WaitGroup{}
+	)
 
+	wg.Add(4)
+	go sendJAndroid(wg, title, alert, aDevices...)
+	go sendJIos(wg, title, alert, true, iDevices...)
+	go sendHuaWei(wg, title, alert, hDevices...)
+	go sendXiaoMi(wg, title, alert, mDevices...)
+	wg.Wait()
 
-		)
+}
 
-		wg.Add(4)
-		go sendJAndroid(wg, title, alert, aDevices...)
-		go sendJIos(wg, title, alert, true, iDevices...)
-		go sendHuaWei(wg, title, alert, hDevices...)
-		go sendXiaoMi(wg, title, alert, mDevices...)
-		wg.Wait()
+func sendApplePushExample() {
+	conf := GetApplePush()
+	if err := apple.InitApns(conf.P12Path); err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	apns := apple.NewApns(conf.PackageName, false)
+	title := "1"
+	body := "1"
+	sound := ""
+	link := ""
+	payload := apple.Payload{
+		Aps:  apple.Aps{Alert: apple.Alert{Title: title, Body: body}, Badge: 1, Sound: sound},
+		Link: link,
+	}
+	apns.QuickPush("f9a4040ecd89b0f08511fd479de65ba016f0ac15b25ae57d585b972a49a8e242", payload)
+}
 
+func sendWxPushExample() {
+	token := "30_EN51TrSEfCrboPg26FmnjkunBPrFxkEGUyiR59vQhY0WkY064uoU0Lv8FdpCsp4uawWszWYI3HieT10BMWJqr3AOrih_xYjOhDe6U2x7hjQTD1Of_-0zvgxL80wuMxxD2n6k88geRGyjKXwbEWXfAFAUMN"
+	user := "oFqEd6HUL3u0grQ6Zsa27SJ2w558"
+	tid := "vy-_mZpvXezlnGeT3Qipyz_zNdy56bdi0smvrUyvfJ4"
+	url := wechat.UrlTemplateMessageSend
+	result := &wechat.TemplateSendResp{}
+	data := struct {
+		Name wechat.TemplateDataItem `json:"name"`
+	}{
+		Name: wechat.TemplateDataItem{Value: "平安度疫", Color: "#ff0000"},
+	}
+	template := wechat.NewTemplate().
+		SetToUser(user).
+		SetTemplateId(tid).
+		SetData(data)
+	wechat.PushReceptor(wechat.PushTypeTemplate, token).
+		SetTemplate(template).
+		Push(url, result)
 }

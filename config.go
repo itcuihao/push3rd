@@ -5,16 +5,13 @@ import (
 	"io/ioutil"
 )
 
-var conf *Config
+var conf *PushConfig
 
-type Config struct {
-	Push *Push `json:"push"`
-}
-
-type Push struct {
-	JPush  JPush  `json:"jpush"`
-	HwPush HwPush `json:"hwpush"`
-	MiPush MiPush `json:"mipush"`
+type PushConfig struct {
+	JPush     *JPush     `json:"jpush"`
+	HwPush    *HwPush    `json:"hwpush"`
+	MiPush    *MiPush    `json:"mipush"`
+	ApplePush *ApplePush `json:"apple_push"`
 }
 
 type JPush struct {
@@ -23,36 +20,47 @@ type JPush struct {
 }
 
 type HwPush struct {
-	AppId  string `json:"app_id"`
-	Secret string `json:"secret"`
+	AppId       string `json:"app_id"`
+	Secret      string `json:"secret"`
+	PackageName string `json:"package_name"`
 }
 
 type MiPush struct {
-	Secret string `json:"secret"`
+	Secret      string `json:"secret"`
+	PackageName string `json:"package_name"`
+}
+
+type ApplePush struct {
+	PackageName string `json:"package_name"`
+	P12Path     string `json:"p12_path"`
 }
 
 func GetJPush() JPush {
-	p := conf.Push
-	if p == nil {
+	if conf.JPush == nil {
 		panic("push not conf")
 	}
-	return p.JPush
+	return *conf.JPush
 }
 
 func GetHwPush() HwPush {
-	p := conf.Push
-	if p == nil {
+	if conf.HwPush == nil {
 		panic("push not conf")
 	}
-	return p.HwPush
+	return *conf.HwPush
 }
 
 func GetMiPush() MiPush {
-	p := conf.Push
-	if p == nil {
+	if conf.MiPush == nil {
 		panic("push not conf")
 	}
-	return p.MiPush
+	return *conf.MiPush
+}
+
+func GetApplePush() ApplePush {
+	if conf.ApplePush == nil {
+		panic("push not conf")
+	}
+	return *conf.ApplePush
 }
 
 func InitConfig(cfgFile string) error {
@@ -61,17 +69,15 @@ func InitConfig(cfgFile string) error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
-func readConf(cfgFile string) (*Config, error) {
+func readConf(cfgFile string) (*PushConfig, error) {
 	f, err := ioutil.ReadFile(cfgFile)
 	if err != nil {
 		return nil, err
 	}
-
-	data := &Config{}
+	data := &PushConfig{}
 	err = json.Unmarshal(f, data)
 	if err != nil {
 		return nil, err
